@@ -21,6 +21,13 @@ namespace FileUploadDragSort.Controllers
             return View();
         }
 
+        public ActionResult Animation()
+        {
+
+
+            return View();
+        }
+
         //public ActionResult Contact()
         //{
         //    ViewBag.Message = "Your contact page.";

@@ -1,0 +1,18 @@
+﻿        .animation {
+            width: 238px;
+            height: 240px;
+            margin: 2% auto;
+            background-image: url("./ani.png");
+        }
+        .animation.active {
+            animation: play 1.2s steps(5);
+        }
+
+        .canh1 {
+            margin-top: 100px;
+        }
+
+        @keyframes play {
+           from { background-position:    0px; }
+             to { background-position: -1200px; }
+        }

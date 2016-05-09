@@ -1,0 +1,155 @@
+﻿
+@{
+    ViewBag.Title = "CSS & APNG Animation";
+}
+
+@section styles{
+
+    <link href="~/Content/animation.css" rel="stylesheet" />
+
+}
+
+@section scripts{
+    <script src="~/Scripts/ani/apng-canvas.min.js"></script>
+
+    <script>
+
+        $(function(){
+            var ani = document.getElementById('ani'),
+                playBtn = document.getElementById('play'),
+                //resetBtn = document.getElementById('reset'),
+                sound = document.getElementById('mp3');
+
+            playBtn.addEventListener('click', function() {
+              if (!ani.classList.contains('active')) {
+                ani.classList.add('active');
+                sound.play();
+              }
+
+            }, false);
+
+            ani.addEventListener('click', function() {
+                if (!ani.classList.contains('active')) {
+                    ani.classList.add('active');
+                }
+            }, false);
+
+            ani.addEventListener("animationend", function(){
+                console.log('end');
+                ani.classList.remove('active');
+                sound.pause();
+                sound.currentTime = 0;
+
+            }, false);
+
+
+            //***************************************************
+            var myApngAnimateImage = function (img) {
+                img.setAttribute("data-is-apng", "progress");
+                return APNG.parseURL(img.src).then(
+                    function (anim) {
+                        console.log(anim);
+                        img.setAttribute("data-is-apng", "yes");
+                        var canvas = document.createElement("canvas");
+                        canvas.width = anim.width;
+                        canvas.height = anim.height;
+                        Array.prototype.slice.call(img.attributes).forEach(function (attr) {
+                            if (["alt", "src", "usemap", "ismap", "data-is-apng", "width", "height"].indexOf(attr.nodeName) == -1) {
+                                canvas.setAttributeNode(attr.cloneNode(false));
+                            }
+                        });
+                        canvas.setAttribute("data-apng-src", img.src);
+                        if (img.alt != "") canvas.appendChild(document.createTextNode(img.alt));
+
+                        var imgWidth = "", imgHeight = "", val = 0, unit = "";
+
+                        if (img.style.width != "" && img.style.width != "auto") {
+                            imgWidth = img.style.width;
+                        } else if (img.hasAttribute("width")) {
+                            imgWidth = img.getAttribute("width") + "px";
+                        }
+                        if (img.style.height != "" && img.style.height != "auto") {
+                            imgHeight = img.style.height;
+                        } else if (img.hasAttribute("height")) {
+                            imgHeight = img.getAttribute("height") + "px";
+                        }
+                        if (imgWidth != "" && imgHeight == "") {
+                            val = parseFloat(imgWidth);
+                            unit = imgWidth.match(/\D+$/)[0];
+                            imgHeight = Math.round(canvas.height * val / canvas.width) + unit;
+                        }
+                        if (imgHeight != "" && imgWidth == "") {
+                            val = parseFloat(imgHeight);
+                            unit = imgHeight.match(/\D+$/)[0];
+                            imgWidth = Math.round(canvas.width * val / canvas.height) + unit;
+                        }
+                        canvas.style.width = imgWidth;
+                        canvas.style.height = imgHeight;
+
+                        var p = img.parentNode;
+                        p.insertBefore(canvas, img);
+                        p.removeChild(img);
+                        anim.addContext(canvas.getContext("2d"));
+                        anim.play();
+
+                        //Sound Start Play
+                        sound.play();
+                    },
+                    function () {
+                        img.setAttribute("data-is-apng", "no");
+                    });
+            };
+
+            APNG.ifNeeded().then(function() {
+                var images = document.querySelectorAll(".apng");
+                for (var i = 0; i < images.length; i++) {
+                    //APNG.animateImage(images[i]);
+                    //sound.play();
+                    console.log(images[i]);
+                    myApngAnimateImage(images[i]);
+
+
+                }
+
+            })
+            .catch(function (error) {
+                console.warn(error);
+            });
+
+
+            $('#mycanvas').on('click', '.apng', canvasClick);
+            function canvasClick(e) {
+                console.log(e.currentTarget);
+                APNG.releaseCanvas(e.currentTarget);
+            }
+
+        });
+
+
+    </script>
+
+}
+
+<h2>## CSS SPRITE ANIMATION</h2>
+<h2>## APNG ANIMATION</h2>
+<h2>## ANIMATION WITH SOUND</h2>
+
+<div id="ani" class="animation"></div>
+<div id="soundArea">
+    <audio id="mp3" src="~/Content/7669860_snd.mp3" preload="auto">
+        MEDIA
+    </audio>
+</div>
+
+<div class="buttons">
+    <button id="play">Play</button>
+    <!-- <button id="reset">Reset</button> -->
+</div>
+
+<h1 class="canh1">APNG Animation</h1>
+
+<div id='mycanvas'>
+    <img class="apng" src="~/Content/7669860_ani.png" alt="">
+    <img class="apng" src="~/Content/line.png" alt="">
+</div>
+
